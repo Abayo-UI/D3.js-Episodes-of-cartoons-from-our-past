@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>d3.js tests</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        
+    </style>
+  </head>
+  <body>
+    <script> 
+
+        const w = 800;
+        const h = 500;
+        const padding = 140;
+
+        const title = d3.select("body")
+                        .append("h2")
+                        .text("Episodes of Cartoons from your past")
+                        .style("font-style","italic")
+                        .style("text-decoration", "underline")
+                        .style("margin-left","2.3rem");
+
+        const svg = d3.select("body")
+                      .append("svg")
+                      .attr("width", w)
+                      .attr("height", h);
+
+      const xScale = d3.scaleBand()
+                       .range([70, w])
+                       .padding(0.1); 
+
+      const yScale = d3.scaleLinear();            
+
+      d3.json("https://api.sampleapis.com/cartoons/cartoons2D").then((data)=> {
+                       xScale.domain(data.map( (d)=> d.title));
+
+                       const xAxis = d3.axisBottom(xScale);
+                       svg.append("g")
+                          .attr("transform", `translate(0,${h-padding})`)
+                          .call(xAxis)
+                          .selectAll("text")
+                          .style("text-anchor", "end")
+                          .attr("x", "-.8em")
+			                    .attr("y", ".15em")
+                          .attr("transform","rotate(-45)");
+
+                        yScale.domain([0, d3.max(data, (d)=> d.episodes)])
+                              .range([h-padding, 0]);
+
+                        const yAxis = d3.axisLeft(yScale);
+                        svg.append("g")
+                           .attr("transform",`translate(70, 0)`)
+                           .call(yAxis);
+
+                        svg.append("text")
+                           .attr("transform", "rotate(-90)")
+                           .attr("x", -h / 3)
+                           .attr("y", 35)
+                           .style("text-anchor", "middle")
+                           .text("Episodes");
+
+                        svg.selectAll("rect")
+                           .data(data)
+                           .enter()
+                           .append("rect")
+                           .attr("height", (d)=> h - yScale(d.episodes) - padding)
+                           .attr("width", xScale.bandwidth())
+                           .attr("x", (d)=> xScale(d.title))
+                           .attr("y", (d)=> yScale(d.episodes))
+                           .style("fill","green")
+                        });
+    </script>
+  </body>
+</html>
