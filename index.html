@@ -30,10 +30,11 @@
         const svg = d3.select("body")
                       .append("svg")
                       .attr("width", w)
-                      .attr("height", h);
+                      .attr("height", h)
+                      .style("background-color", "white");
 
       const xScale = d3.scaleBand()
-                       .range([70, w])
+                       .range([70, w-60])
                        .padding(0.1); 
 
       const yScale = d3.scaleLinear();            
@@ -65,6 +66,18 @@
                            .attr("y", 35)
                            .style("text-anchor", "middle")
                            .text("Episodes");
+
+                        const rightYAxis = d3.axisRight(yScale);
+                        svg.append("g")
+                           .attr("transform",`translate(${w-60},0)`)
+                           .call(rightYAxis);
+
+                        svg.append("text")
+                           .attr("transform","rotate(-90)")
+                           .attr("y", w - 10)
+                           .attr("x", -h / 3)
+                           .style("text-anchor", "middle")
+                           .text("Episodes")
 
                         svg.selectAll("rect")
                            .data(data)
